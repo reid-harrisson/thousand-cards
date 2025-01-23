@@ -3,14 +3,20 @@ package main
 import "fmt"
 
 // Function to calculate divisors of a number
-func calculateDivisors(n int) []int {
-	divisors := []int{}
-	for i := 1; i <= n/2; i++ {
+func calculateDivisors(n int) ([]int, int) {
+	divisors := []int{1}
+	sumOfDivisors := 1
+	for i := 2; i*i <= n; i++ {
 		if n%i == 0 {
 			divisors = append(divisors, i)
+			sumOfDivisors += i
+			if i != n/i { // Avoid adding the square root twice
+				divisors = append(divisors, n/i)
+				sumOfDivisors += n / i
+			}
 		}
 	}
-	return divisors
+	return divisors, sumOfDivisors
 }
 
 // Function to check if any subset of divisors sums to the card number
@@ -30,11 +36,7 @@ func main() {
 	validCards := []int{}
 
 	for card := 1; card <= 1000; card++ {
-		divisors := calculateDivisors(card)
-		sumOfDivisors := 0
-		for _, divisor := range divisors {
-			sumOfDivisors += divisor
-		}
+		divisors, sumOfDivisors := calculateDivisors(card)
 
 		if sumOfDivisors > card && !subsetSum(divisors, card) {
 			validCards = append(validCards, card)
